@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FitFlow AI - Treino Inteligente</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .container {
+      width: 100%;
+      max-width: 1200px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      height: 80vh;
+    }
+    .app-section {
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+    .header h1 {
+      font-size: 24px;
+      margin-bottom: 5px;
+    }
+    .content {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+    }
+    .workout-form {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    label {
+      font-weight: 600;
+      color: #333;
+      font-size: 14px;
+    }
+    input[type="text"],
+    input[type="number"],
+    input[type="date"],
+    select,
+    textarea {
+      padding: 10px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 14px;
+      font-family: inherit;
+      transition: border-color 0.3s;
+    }
+    input[type="text"]:focus,
+    input[type="number"]:focus,
+    input[type="date"]:focus,
+    select:focus,
+    textarea:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+    .btn {
+      padding: 12px 20px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+    }
+    .btn-secondary {
+      background: #f0f0f0;
+      color: #333;
+    }
+    .btn-secondary:hover {
+      background: #e0e0e0;
+    }
+    .workout-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .workout-item {
+      background: #f5f5f5;
+      padding: 12px;
+      border-radius: 8px;
+      border-left: 4px solid #667eea;
+    }
+    .workout-item h4 {
+      color: #333;
+      margin-bottom: 5px;
+    }
+    .workout-item p {
+      font-size: 13px;
+      color: #666;
+    }
+    .chat-container {
+      display: flex;
+      flex-direction: column;
+    }
+    .messages {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+      background: #f9f9f9;
+    }
+    .message {
+      margin-bottom: 15px;
+      display: flex;
+      gap: 10px;
+    }
+    .message.user {
+      justify-content: flex-end;
+    }
+    .message-bubble {
+      max-width: 70%;
+      padding: 12px 15px;
+      border-radius: 15px;
+      font-size: 14px;
+      line-height: 1.4;
+    }
+    .message.ai .message-bubble {
+      background: #e8eef7;
+      color: #333;
+    }
+    .message.user .message-bubble {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+    .chat-input-area {
+      padding: 15px;
+      border-top: 1px solid #e0e0e0;
+      display: flex;
+      gap: 10px;
+    }
+    .chat-input-area input {
+      flex: 1;
+    }
+    .chat-input-area button {
+      padding: 10px 20px;
+    }
+    .loading {
+      text-align: center;
+      color: #999;
+      padding: 20px;
+      font-style: italic;
+    }
+    .error {
+      background: #fee;
+      color: #c33;
+      padding: 10px;
+      border-radius: 5px;
+      margin: 10px 0;
+    }
+    @media (max-width: 768px) {
+      .container {
+        grid-template-columns: 1fr;
+        height: auto;
+        min-height: 100vh;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Workout Tracking Section -->
+    <div class="app-section">
+      <div class="header">
+        <h1>Meu Treino</h1>
+        <p>Registre seu exercício</p>
+      </div>
+      <div class="content">
+        <form class="workout-form" id="workoutForm">
+          <div class="form-group">
+            <label for="exercise">Exercício</label>
+            <input type="text" id="exercise" placeholder="Ex: Supino" required>
+          </div>
+          <div class="form-group">
+            <label for="series">Séries</label>
+            <input type="number" id="series" min="1" placeholder="4" required>
+          </div>
+          <div class="form-group">
+            <label for="reps">Repetições</label>
+            <input type="number" id="reps" min="1" placeholder="10" required>
+          </div>
+          <div class="form-group">
+            <label for="weight">Peso (kg)</label>
+            <input type="number" id="weight" min="0" step="0.5" placeholder="100" required>
+          </div>
+          <div class="form-group">
+            <label for="notes">Observações</label>
+            <textarea id="notes" placeholder="Como foi o treino?" rows="3"></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary">Registrar Treino</button>
+        </form>
+        <div style="margin-top: 30px;">
+          <h3 style="margin-bottom: 15px; color: #333;">Histórico</h3>
+          <div class="workout-list" id="workoutList"></div>
+        </div>
+      </div>
+    </div>
+    <!-- AI Chat Section -->
+    <div class="app-section">
+      <div class="header">
+        <h1>IA Personal</h1>
+        <p>Chat com IA Nvidia</p>
+      </div>
+      <div class="chat-container">
+        <div class="messages" id="messages">
+          <div class="message ai">
+            <div class="message-bubble">Olá! Sou seu personal trainer IA. Como posso ajudar você com seu treino?</div>
+          </div>
+        </div>
+        <div class="chat-input-area">
+          <input type="text" id="chatInput" placeholder="Envie uma mensagem..." />
+          <button class="btn btn-primary" id="sendBtn">Enviar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Workout tracking
+    const workoutForm = document.getElementById('workoutForm');
+    const workoutList = document.getElementById('workoutList');
+    let workouts = JSON.parse(localStorage.getItem('workouts')) || [];
+
+    function renderWorkouts() {
+      workoutList.innerHTML = workouts.map((w, i) => `
+        <div class="workout-item">
+          <h4>${w.exercise}</h4>
+          <p>${w.series} séries x ${w.reps} reps - ${w.weight}kg</p>
+          <p style="font-size: 12px; margin-top: 5px; color: #999;">${new Date(w.date).toLocaleDateString('pt-BR')}</p>
+        </div>
+      `).reverse().join('');
+    }
+
+    workoutForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      workouts.push({
+        exercise: document.getElementById('exercise').value,
+        series: document.getElementById('series').value,
+        reps: document.getElementById('reps').value,
+        weight: document.getElementById('weight').value,
+        notes: document.getElementById('notes').value,
+        date: new Date().toISOString()
+      });
+      localStorage.setItem('workouts', JSON.stringify(workouts));
+      workoutForm.reset();
+      renderWorkouts();
+    });
+
+    renderWorkouts();
+
+    // Chat functionality
+    const chatInput = document.getElementById('chatInput');
+    const sendBtn = document.getElementById('sendBtn');
+    const messagesDiv = document.getElementById('messages');
+
+    function addMessage(text, sender) {
+      const messageEl = document.createElement('div');
+      messageEl.className = `message ${sender}`;
+      messageEl.innerHTML = `<div class="message-bubble">${escapeHtml(text)}</div>`;
+      messagesDiv.appendChild(messageEl);
+      messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    async function sendMessage() {
+      const message = chatInput.value.trim();
+      if (!message) return;
+
+      addMessage(message, 'user');
+      chatInput.value = '';
+
+      try {
+        // Use your Vercel API endpoint
+        const response = await fetch('https://fitflow-ai-api.vercel.app/api/chat', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ message })
+        });
+
+        if (!response.ok) throw new Error('Erro na requisição');
+        const data = await response.json();
+        addMessage(data.response, 'ai');
+      } catch (error) {
+        addMessage('Desculpe, ocorreu um erro. Tente novamente.', 'ai');
+        console.error('Erro:', error);
+      }
+    }
+
+    sendBtn.addEventListener('click', sendMessage);
+    chatInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') sendMessage();
+    });
+  </script>
+</body>
+</html>
