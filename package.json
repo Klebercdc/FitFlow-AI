@@ -1,0 +1,24 @@
+{
+  "name": "fitflow-ai",
+  "version": "1.0.0",
+  "description": "AI-powered fitness tracking app with NVIDIA Nemotron Chat",
+  "main": "api/chat.js",
+  "scripts": {
+    "dev": "vercel dev",
+    "build": "vercel build",
+    "start": "vercel start"
+  },
+  "keywords": ["fitness", "ai", "workout", "nvidia"],
+  "author": "Kleber",
+  "license": "MIT",
+  "engines": {
+    "node": "18.x"
+  },
+  "dependencies": {
+    "node-fetch": "^2.6.11"
+  },
+  "devDependencies": {},
+  "engines": {
+    "node": "18.x"
+  }
+}
