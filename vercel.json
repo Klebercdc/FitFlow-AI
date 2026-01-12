@@ -1,0 +1,19 @@
+{
+  "buildCommand": "npm run build",
+  "installCommand": "npm install",
+  "framework": "vanilla",
+  "env": {
+    "NVIDIA_API_KEY": "@nvidia_api_key"
+  },
+  "functions": {
+    "api/chat.js": {
+      "maxDuration": 10
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "/api/:path*.js"
+    }
+  ]
+}
